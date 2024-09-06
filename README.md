@@ -1,5 +1,3 @@
-## Identifying deleterious noncoding variation through gain and loss of CTCF binding activity
-
 Created: Sep 04, 2024
 
 Last edited: Sep 06, 2024
