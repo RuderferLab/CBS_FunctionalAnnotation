@@ -1,0 +1,38 @@
+MAIN:
+  IO_DIRS:
+    INSTALL_DIR: resources
+    PROCESS_DIR: results
+  TEST_FILES:
+    ENCODE_CCRES: resources/encode/GRCh38-cCREs.bed.gz
+    CTCF_ZSCORE_MATRIX_SAMPLE: resources/encode/GRCh38.CTCF-zscore.rDHS-V3.Sample1k.txt.gz
+    JASPAR_TRACK: resources/jaspar/MA0139.2.tsv.gz
+  TEST_PARAMS:
+    CHROMOSOMES: 
+      - chr1
+      - chr10
+      - chr11 
+      - chr12
+  GENOME:
+    GENOME_DIR: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/deltaActivity_encode/resources/data/genome/hg38
+    GENOME_GAPS: hg38.gaps.bed
+    CHROM_SIZES: hg38.fa.sizes
+    BLACKLIST: hg38.blacklist.bed
+    EXONS: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/deltaActivity/results/gencode/hg38/gencode.hg38.exons.protein_coding.bed
+  GNOMAD:
+    SNVS: /data/ruderferlab/resources/gnomad/results/gnomad.v3.snvs.all.hg38.vid.bed.sorted.gz
+  CONSERVATION:
+    GERP: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/deltaActivity_encode/resources/data/conservation/All_hg19_RS.bw
+    PHASTCONS: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/deltaActivity_encode/resources/data/conservation/hg38.phastCons100way.bw
+    PHYLOP: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/deltaActivity_encode/resources/data/conservation/hg38.phyloP100way.bw
+    LINSIGHT: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/deltaActivity_encode/resources/data/conservation/LINSIGHT.bw
+  URLS:
+    ENCODE:
+      CCRES: https://downloads.wenglab.org/V3/GRCh38-cCREs.bed
+      ZSCORES: https://downloads.wenglab.org/cCREs/matrices/all/GRCh38.CTCF-zscore.rDHS-V3.txt.gz
+    JASPAR:
+      TRACK: https://frigg.uio.no/JASPAR/JASPAR_TFBSs/2024/hg38/MA0139.2.tsv.gz
+    CONSERVATION:
+      GERP: https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/All_hg19_RS.bw
+      LINSIGHT: http://compgen.cshl.edu/LINSIGHT/LINSIGHT.bw
+      PHYLOP: http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phylop100way/hg38.phyloP100way.bw
+      PHASTCONS: http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phastCons100way/hg38.phastCons100way.bw
