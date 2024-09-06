@@ -41,7 +41,7 @@ http://compgen.cshl.edu/LINSIGHT/LINSIGHT.bw
 
 # Code 
 
-This respository is structered as a Snakemake workflow. To demonstrate how the study dataset was constructed, we've included all workflow input and outputs for a small sample of rDHS (n = 1000). All code used to generate these files are contained in the `workflow` directory and all intermediate outputs for this sample dataset are in the `results` directory.
+This respository is structured as a Snakemake workflow. To demonstrate how the study dataset was constructed, we've included all workflow input and outputs for a small sample of rDHS (n = 1000). All code used to generate these files are contained in the `workflow` directory and all intermediate outputs for this sample dataset are in the `results` directory.
 
 
 For details on the generation of all figures included in the manuscript, see `results/Manuscript/figures.ipynb`. We also provide code to generate maps scores in `results/Manuscript/maps` as well as a summary file of all CBS used in the study annotated by thier intersecting rDHS, CTCF motif and activity scores in `results/Manuscript/files`. 
