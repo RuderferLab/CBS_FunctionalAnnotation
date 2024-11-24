@@ -1,6 +1,6 @@
 Created: Sep 04, 2024
 
-Last edited: Sep 06, 2024
+Last edited: Oct 31, 2024
 
 ### Authors:
 
@@ -15,19 +15,23 @@ Currently under review.
 ### Publicly available data
 All datasets used in this study are publicly available. 
 
-Genetic data from gnomAD v3.1.2 was downloaded for all chromosomes as a Hail matrix table: 
-gs://gcp-public-data--gnomad/release/3.1.2/ht/genomes/gnomad.genomes.v3.1.2.sites.ht
+Genetic data from gnomAD v3.1.2 was downloaded for all chromosomes as a Hail matrix table:
 
+https://gnomad.broadinstitute.org/data
 
 CTCF’s binding activity Z-scores assessed in the cCRE framework were downloaded from the ENCODE-SCREEN web portal:
+
 https://downloads.wenglab.org/cCREs/matrices/all/GRCh38.CTCF-zscore.rDHS-V3.txt.gz
 
 
 CTCF’s canonical PWM (MA0139.2) was downloaded from the JASPAR 2024 web portal:
+
 https://jaspar.elixir.no/api/v1/matrix/MA0139.2.jaspar
 
 
 Conservation scores were downloaded from the UCSC genome browser. GERP++ scores in build hg19, Phastcons100 and PhyloP100 scores in build hg38 are found at:
+
+GERP++ in build hg19
 https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/All_hg19_RS.bw
 
 Phastcons100 in build hg38:
