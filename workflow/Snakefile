@@ -1,0 +1,67 @@
+from pathlib import Path
+from snakemake.utils import min_version
+
+
+# Configuration
+configfile: "config/config.yaml"
+
+
+# Settings
+min_version("7.12.1")
+
+
+# Define modules
+module rule_01:
+    snakefile:
+        "rules/01_annotate-rdhs.smk"
+    config:
+        config
+
+module rule_02:
+    snakefile:
+        "rules/02_process-motifs.smk"
+    config:
+        config
+
+module rule_03:
+    snakefile:
+        "rules/03_annotate-bases.smk"
+    config:
+        config
+
+module rule_04:
+    snakefile:
+        "rules/04_annotate-snvs.smk"
+    config:
+        config
+
+module rule_05:
+    snakefile:
+        "rules/05_final-matrix.smk"
+    config:
+        config
+
+
+
+# Import modules
+use rule * from rule_01 as rule_01_*
+use rule * from rule_02 as rule_02_*
+use rule * from rule_03 as rule_03_*
+use rule * from rule_04 as rule_04_*
+use rule * from rule_05 as rule_05_*
+
+
+
+# ------------- #
+# Rules         #
+# ------------- #
+
+
+rule all:
+    input:
+        rules.rule_01_all.input,
+        rules.rule_02_all.input,
+        rules.rule_03_all.input,
+        rules.rule_04_all.input,
+        rules.rule_05_all.input
+    default_target: True

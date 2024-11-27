@@ -1,0 +1,43 @@
+MAIN:
+  IO_DIRS:
+    INSTALL_DIR: resources
+    PROCESS_DIRS: 
+      STEP_1: results/01_annotate-rdhs
+      STEP_2: results/02_process-motifs
+      STEP_3: results/03_annotate-bases
+      STEP_4: results/04_annotate-snvs
+      STEP_5: results/05_final-matrix
+  TEST_FILES:
+    ENCODE_CCRES: resources/encode/GRCh38-cCREs.bed.gz
+    CTCF_ZSCORE_MATRIX_SAMPLE: resources/data/encode/GRCh38.CTCF-zscore.rDHS-V3.Sample1k.txt.gz
+    JASPAR_TRACK: resources/jaspar/MA0139.2.tsv.gz
+  TEST_PARAMS:
+    CHROMOSOMES: 
+      - chr1
+      - chr10
+      - chr11 
+      - chr12
+  GENOME:
+    HG38_FASTA: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/CBS_FunctionalAnnotationParent/resources/data/genome/hg38/hg38.fa
+    GENOME_GAPS: resources/data/genome/hg38.gaps.bed.gz
+    CHROM_SIZES: resources/data/genome/hg38.fa.sizes
+    BLACKLIST: resources/data/genome/hg38.blacklist.bed.gz
+    EXONS: resources/data/gencode/gencode.hg38.exons.pc.bed.gz
+  GNOMAD:
+    SNVS: /data/ruderferlab/resources/gnomad/results/gnomad.v3.snvs.all.hg38.vid.bed.sorted.gz
+  CONSERVATION:
+    GERP: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/All_hg19_RS.bw
+    PHASTCONS: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/hg38.phastCons100way.bw
+    PHYLOP: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/hg38.phyloP100way.bw
+    LINSIGHT: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/LINSIGHT.bw
+  URLS:
+    ENCODE:
+      CCRES: https://downloads.wenglab.org/V3/GRCh38-cCREs.bed
+      ZSCORES: https://downloads.wenglab.org/cCREs/matrices/all/GRCh38.CTCF-zscore.rDHS-V3.txt.gz
+    JASPAR:
+      TRACK: https://frigg.uio.no/JASPAR/JASPAR_TFBSs/2024/hg38/MA0139.2.tsv.gz
+    CONSERVATION:
+      GERP: https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/All_hg19_RS.bw
+      LINSIGHT: http://compgen.cshl.edu/LINSIGHT/LINSIGHT.bw
+      PHYLOP: http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phylop100way/hg38.phyloP100way.bw
+      PHASTCONS: http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phastCons100way/hg38.phastCons100way.bw
