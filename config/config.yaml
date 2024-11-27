@@ -18,18 +18,18 @@ MAIN:
       - chr11 
       - chr12
   GENOME:
-    HG38_FASTA: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/CBS_FunctionalAnnotationParent/resources/data/genome/hg38/hg38.fa
+    HG38_FASTA: # Path to hg38.fa
     GENOME_GAPS: resources/data/genome/hg38.gaps.bed.gz
     CHROM_SIZES: resources/data/genome/hg38.fa.sizes
     BLACKLIST: resources/data/genome/hg38.blacklist.bed.gz
     EXONS: resources/data/gencode/gencode.hg38.exons.pc.bed.gz
   GNOMAD:
-    SNVS: /data/ruderferlab/resources/gnomad/results/gnomad.v3.snvs.all.hg38.vid.bed.sorted.gz
+    SNVS: # Path to gnomad SNVs
   CONSERVATION:
-    GERP: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/All_hg19_RS.bw
-    PHASTCONS: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/hg38.phastCons100way.bw
-    PHYLOP: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/hg38.phyloP100way.bw
-    LINSIGHT: /data/ruderferlab/projects/biovu/cnv/cre/CTCF-Variant-Annotation/snakemake/workflows/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/LINSIGHT.bw
+    GERP: # Path to gerp scores
+    PHASTCONS: # Path to phastcons scores
+    PHYLOP: # Path to phylop scores
+    LINSIGHT: # Path to linsight scores
   URLS:
     ENCODE:
       CCRES: https://downloads.wenglab.org/V3/GRCh38-cCREs.bed
