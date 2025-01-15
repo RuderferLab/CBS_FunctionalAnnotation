@@ -8,6 +8,7 @@ This file contains activity scores for CBS identified in the study.
 | :---------------- | :------: | 
 | rDHS | ENCODE accession of the rDHS |
 | mid | Motif ID used in the study. We refer to these motifs as CBSs. |
+| cid | CBS ID used in study |
 | activity | CTCF binding activity score from meta-analyzing CTCF's Z-score at a given rDHS across 214 available biosamples. 
 | quantile | Masked activity scores after binning into quantiles. Quantiles were used in the study to evaluate the functional properties of activity scores. |
 
