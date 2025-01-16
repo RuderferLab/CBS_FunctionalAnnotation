@@ -1,3 +1,4 @@
+import pandas as pd
 from pathlib import Path
 from snakemake.utils import min_version
 
@@ -11,21 +12,21 @@ min_version("7.12.1")
 # ------------- #
 
 # IO
-INSTALL_DIR = config["MAIN"]["IO_DIRS"]["INSTALL_DIR"]
-PROCESS_DIR = config["MAIN"]["IO_DIRS"]["PROCESS_DIRS"]["STEP_2"]
+INSTALL_DIR = config["IO_DIRS"]["INSTALL_DIR"]
+PROCESS_DIR = config["IO_DIRS"]["PROCESS_DIR"]["STEP_2"]
 
 # MOTIF TRACK URL
-JASPAR_TRACK_URL = config["MAIN"]["TEST_FILES"]["JASPAR_TRACK"]
+JASPAR_TRACK_URL = config["URLS"]["JASPAR"]["TRACK"]
 
 # Other
-GENOME_GAPS = config["MAIN"]["GENOME"]["GENOME_GAPS"]
-BLACKLIST = config["MAIN"]["GENOME"]["BLACKLIST"]
-EXONS = config["MAIN"]["GENOME"]["EXONS"]
-CHROM_SIZES = config["MAIN"]["GENOME"]["CHROM_SIZES"]
-CCRES = config["MAIN"]["TEST_FILES"]["ENCODE_CCRES"]
+HG38_GAPS = config["IP_DATA"]["UCSC"]["HG38_GAPS"]
+BLACKLIST = config["IP_DATA"]["ENCODE"]["BLACKLIST"]
+EXONS = config["IP_DATA"]["GENCODE"]["EXONS"]
+HG38_SIZES = config["IP_DATA"]["UCSC"]["HG38_SIZES"]
+CCRES = config["IP_DATA"]["ENCODE"]["CCRES"]
 
 # Activity - from section 1
-ACTIVITY = Path("results/01_annotate-rdhs/rdhs-activity.hg38.tsv")
+ACTIVITY = Path("results/01_annotate-rdhs/GRCh38.CTCF-zscore.rDHS-V3.activity.tsv")
 
 # ------------- #
 #     Rules     #
@@ -34,9 +35,7 @@ ACTIVITY = Path("results/01_annotate-rdhs/rdhs-activity.hg38.tsv")
 
 rule all:
     input:
-        Path(PROCESS_DIR, "hg38.masked_regions.bed"),
-        Path(PROCESS_DIR, "MA0139.2-track.masked.bed"),
-        Path(PROCESS_DIR, "MA0139.2-track.masked.pwm-activity.bed"),
+        Path(PROCESS_DIR, "MA0139.2-track.masked.noproblematic.ccre.cbsid.bed"),
 
 
 # ------------- #
@@ -93,11 +92,11 @@ rule build_mask:
     Builds reference genome mask
     """
     input:
-        gaps=GENOME_GAPS,
+        gaps=HG38_GAPS,
         blacklist=BLACKLIST,
         exons=EXONS,
     output:
-        Path(PROCESS_DIR, "hg38.masked_regions.bed"),
+        Path(PROCESS_DIR, "problematic-regions.hg38.bed"),
     resources:
         mem_mb=2000,
         runtime=30,
@@ -109,7 +108,12 @@ rule build_mask:
     conda:
         "../envs/install.yaml"
     shell:
-        "zcat {input.gaps} {input.blacklist} {input.exons} | vawk '{{print $1, $2, $3}}' | sort -k1,1 -k2,2n > {output}"
+        """
+        zcat {input.gaps} {input.blacklist} {input.exons} | 
+        vawk '{{print $1, $2, $3}}' | 
+        sort -k1,1 -k2,2n |
+        bedtools merge -i stdin > {output}
+        """
 
 
 # ------------- #
@@ -119,13 +123,40 @@ rule build_mask:
 
 rule mask_track:
     """
-    Masks JASPAR track based on reference genome mask
+    Removes excluded regions from motif track
     """
     input:
         track=rules.download_track.output,
         mask=rules.build_mask.output,
     output:
-        Path(PROCESS_DIR, "MA0139.2-track.masked.bed"),
+        temp(Path(PROCESS_DIR, "MA0139.2-track.masked.tsv")),
+    resources:
+        mem_mb=2000,
+        runtime=45,
+    log:
+        stdout=Path("workflow", "logs", "mask_track-MA0139.2.stdout"),
+        stderr=Path("workflow", "logs", "mask_track-MA0139.2.stderr"),
+    benchmark:
+        Path("workflow", "benchmarks", "jaspar", "mask_track-MA0139.2.txt")
+    conda:
+        "../envs/install.yaml"
+    shell:
+        "bedtools intersect -a {input.track} -b {input.mask} -v > {output}"
+
+
+# ------------- #
+#     ----      #
+# ------------- #
+
+
+rule remove_track_problematic:
+    """
+    Removes problematic motifs from track
+    """
+    input:
+        track=rules.mask_track.output,
+    output:
+        Path(PROCESS_DIR, "MA0139.2-track.masked.noproblematic.bed"),
     resources:
         mem_mb=2000,
         runtime=45,
@@ -144,29 +175,27 @@ rule mask_track:
 #     ----      #
 # ------------- #
 
-
-rule make_targets:
+rule annotate_cbs:
     """
-    Annotated motifs with activity scores from section 1
+    Annotate motifs with CBS ID
     """
     input:
-        motifs=rules.mask_track.output,
+        ccres=CCRES,
+        track=rules.remove_track_problematic.output,
         activity=ACTIVITY,
     output:
-        Path(PROCESS_DIR, "MA0139.2-track.masked.pwm-activity.bed"),
+        cbs=Path(PROCESS_DIR, "cbs-only.noproblematic.ccre.cbsid.bed"),
+        compete=Path(PROCESS_DIR, "MA0139.2-track.masked.noproblematic.ccre.cbsid.bed"),
     resources:
         mem_mb=2000,
         runtime=45,
     log:
-        stdout=Path("workflow", "logs", "make_targets.stdout"),
-        stderr=Path("workflow", "logs", "make_targets.stderr"),
+        stdout=Path("workflow", "logs", "annotate_cbs.stdout"),
+        stderr=Path("workflow", "logs", "annotate_cbs.stderr"),
     benchmark:
-        Path("workflow", "benchmarks", "make_targets.txt")
+        Path("workflow", "benchmarks", "annotate_cbs.txt")
     conda:
-        "../envs/install.yaml"
-    shell:
-        """
-        bedtools intersect -a {input.activity} -b {input.motifs} | 
-        bedtools intersect -a stdin -b {input.motifs} -loj |
-        vawk '{{print $7, $8, $9, $10, $11, $12, $13, $14, $4, $5, $6}}' > {output}
-        """
+        # "../envs/install.yaml"
+        "install"
+    script:
+       "../scripts/02_process-motifs/targets.py"

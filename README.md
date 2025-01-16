@@ -1,6 +1,6 @@
 Created: 2024-09-04
 
-Last edited: 2025-01-15
+Last edited: 2025-01-16
 
 ### Authors:
 
@@ -45,7 +45,7 @@ http://compgen.cshl.edu/LINSIGHT/LINSIGHT.bw
 
 # Code 
 
-This respository is structured as a Snakemake workflow. To demonstrate how the study dataset was constructed, we've included all workflow input and outputs for a small sample of rDHS (n = 1000). All code used to generate these files are contained in the `workflow` directory and all intermediate outputs for this sample dataset are in the `results` directory.
+This respository is structured as a Snakemake workflow. To demonstrate how the study dataset was constructed, we've included all workflow input and outputs. All code used to generate these files are contained in the `workflow` directory and all intermediate outputs for this sample dataset are in the `results` directory.
 
 
-For details on the generation of all figures included in the manuscript, see `results/manuscript/figures.ipynb`. For code to generate maps scores see `results/manuscript/maps`.  We provide two summary files generated from the study; for all CBS annotated by their intersecting rDHS, CTCF motif and activity score see `results/manuscript/files/activity-scores.all-CBS.tsv`, for all CBS variants annotated by their activity and dPWM statistics see `results/manuscript/files/variants-scores.all-CBS.tsv`. 
+For details on the generation of all figures included in the manuscript, see `results/manuscript/figures.ipynb`. For code to generate maps scores see `results/manuscript/maps`.  We provide two summary files generated from the study; for all CBS annotated by their intersecting rDHS, CTCF motif and activity score see `results/manuscript/files/activity-scores.all-CBS.tsv.gz`, for all CBS variants annotated by their activity and dPWM statistics see `results/manuscript/files/variants-scores.all-CBS.tsv.gz`. 

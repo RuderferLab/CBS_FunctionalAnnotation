@@ -13,15 +13,15 @@ min_version("7.12.1")
 # ------------- #
 
 # IO
-INSTALL_DIR = config["MAIN"]["IO_DIRS"]["INSTALL_DIR"]
-PROCESS_DIR = config["MAIN"]["IO_DIRS"]["PROCESS_DIRS"]["STEP_1"]
+INSTALL_DIR = config["IO_DIRS"]["INSTALL_DIR"]
+PROCESS_DIR = config["IO_DIRS"]["PROCESS_DIR"]["STEP_1"]
 
 # URLs
-CCRE_CALLS = config["MAIN"]["URLS"]["ENCODE"]["CCRES"]
-CTCF_SIGNAL_MATRIX = config["MAIN"]["URLS"]["ENCODE"]["ZSCORES"]
+CCRES_URL = config["URLS"]["ENCODE"]["CCRES"]
+CTCF_SIGNAL_MATRIX_URL = config["URLS"]["ENCODE"]["CTCF_ZSCORE_MATRIX"]
 
 # Test file
-CTCF_SIGNAL_MATRIX_TEST = config["MAIN"]["TEST_FILES"]["CTCF_ZSCORE_MATRIX_SAMPLE"]
+CTCF_SIGNAL_MATRIX = config["IP_DATA"]["ENCODE"]["CTCF_ZSCORE_MATRIX"]
 
 # ------------- #
 #     Rules     #
@@ -30,7 +30,7 @@ CTCF_SIGNAL_MATRIX_TEST = config["MAIN"]["TEST_FILES"]["CTCF_ZSCORE_MATRIX_SAMPL
 
 rule all:
     input:
-        Path(PROCESS_DIR, "rdhs-activity.hg38.tsv"),
+        Path(PROCESS_DIR, "GRCh38.CTCF-zscore.rDHS-V3.activity.tsv"),
 
 
 # ------------- #
@@ -45,7 +45,7 @@ rule install_ccres:
     output:
         Path(INSTALL_DIR, "data", "encode", "GRCh38-cCREs.bed.gz"),
     params:
-        url=CCRE_CALLS,
+        url=CCRES_URL,
     resources:
         mem_mb=150,
         runtime=30,
@@ -72,7 +72,7 @@ rule install_signal_matrix:
     output:
         Path(INSTALL_DIR, "data", "encode", "GRCh38.CTCF-zscore.rDHS-V3.txt.gz"),
     params:
-        url=CTCF_SIGNAL_MATRIX,
+        url=CTCF_SIGNAL_MATRIX_URL,
     resources:
         mem_mb=250,
         runtime=75,
@@ -97,12 +97,12 @@ rule annotate_activity:
     Annotates rDHS with activity scores.
     """
     input:
-        signal_matrix=CTCF_SIGNAL_MATRIX_TEST,
+        signal_matrix=CTCF_SIGNAL_MATRIX,
         called_ccres=rules.install_ccres.output,
     output:
-        Path(PROCESS_DIR, "rdhs-activity.hg38.tsv"),
+        Path(PROCESS_DIR, "GRCh38.CTCF-zscore.rDHS-V3.activity.tsv"),
     params:
-        chunksize=1000,
+        chunksize=10000,
     resources:
         mem_mb=12000,
         runtime=45,

@@ -1,20 +1,16 @@
-import pandas as pd
-import pybedtools as pbt  # type: ignore
-from Bio import SeqIO
 import gzip
-from collections import defaultdict
+import pandas as pd
+import pyranges as pr
 
 
 # Snakemake
 IP_TRACK = snakemake.input[0]  # type: ignore
-OUTPUT_REF = snakemake.output[0]  # type: ignore
-OUTPUT_ALT = snakemake.output[1]  # type: ignore
 
 # Params
-CHROMOSOME = snakemake.params.chromosome  # type: ignore
 SLOP_SIZE = snakemake.params.slop_size  # type: ignore
-GENOME_SIZES = snakemake.params.genome_sizes  # type: ignore
-GENOME_FASTA = snakemake.params.genome_fasta  # type: ignore
+HG38_FASTA = snakemake.params.genome_fasta  # type: ignore
+OUTDIR = snakemake.params.outdir  # type: ignore
+CHROMOSOMES = [f"chr{i}" for i in range(1, 23)] + ["chrX", "chrY"]
 
 # ------------- #
 # Functions     #
@@ -22,80 +18,65 @@ GENOME_FASTA = snakemake.params.genome_fasta  # type: ignore
 
 
 def read_track(filepath: str) -> pd.DataFrame:
-    return pd.read_csv(filepath, sep="\t", engine="c", usecols=["vid"])
+    return pd.read_csv(
+        filepath, sep="\t", engine="c", usecols=["vid"], dtype={"vid": str}
+    )
+
+
+def clean_sequence(seq: str) -> list:
+    # NOTE: Update to random, A for now
+    random_nuc = "A"
+    return seq.upper().replace("N", random_nuc).replace("n", random_nuc)
+
+
+def mutate_sequence(row: pd.Series) -> str:
+    seq = row["refseq_cleaned"]
+    alt = row["alt"]
+    return seq[:SLOP_SIZE] + alt.upper() + seq[SLOP_SIZE + 1 :]
 
 
 def main():
     """D"""
-
     # Read track
     track = read_track(IP_TRACK)
 
-    # Drop positions with no var
-    track = track.dropna(subset=["vid"])
+    # Select variants
+    track = track[track["vid"] != "."]
 
     # Expand vid to get coords
-    track[["chrm", "pos1", "ref", "alt"]] = track["vid"].str.split("-", expand=True)
-    track["chrm"] = ["chr" + str(i) for i in track["chrm"]]
-    track["pos0"] = track["pos1"].astype(int) - 1
+    track[["Chromosome", "End", "ref", "alt"]] = track["vid"].str.split(
+        "-", expand=True
+    )
+    track["Chromosome"] = ["chr" + str(i) for i in track["Chromosome"]]
+    track["Start"] = track["End"].astype(int) - 1
 
     # Format to bed
-    track = track[["chrm", "pos0", "pos1", "vid", "ref", "alt"]]
+    track = track[["Chromosome", "Start", "End", "vid", "ref", "alt"]]
 
-    # Filter to chromosome
-    track = track[track["chrm"] == CHROMOSOME]
+    # Make pr and extend intervals
+    pr_track = pr.PyRanges(track).extend(SLOP_SIZE)
 
-    # Make pbt
-    track = pbt.BedTool.from_dataframe(track)
+    # Add sequence
+    sequences = pr.get_fasta(pr_track, HG38_FASTA)
 
-    # Slop and return to df
-    track = track.slop(b=SLOP_SIZE, g=GENOME_SIZES).sort()
+    # Convert to df and add seq column
+    track = pr_track.as_df()
+    track["refseq"] = sequences
 
-    # Get seq
-    sequence = track.sequence(fi=GENOME_FASTA, nameOnly=True)
+    # Clean sequences
+    track["refseq_cleaned"] = track["refseq"].apply(lambda x: clean_sequence(x))
 
-    print("D")
+    # Make alt sequence
+    track["altseq_cleaned"] = track.apply(mutate_sequence, axis=1)
 
-    # Store
-    ref_file = []
-    alt_file = []
-
-    # Read in seq
-    for record in SeqIO.parse(sequence.seqfn, "fasta"):
-        # Mutate sequence based on slop size and nuc
-        info = record.id.split("-")
-        seq = str(record.seq)
-        # Check if "n" or "N" in seq and if so replace with random ["A",  C", "G", "T"]
-        if "n" in seq or "N" in seq:
-            print("FOUND N IN SEQ...")
-            for idx, nuc in enumerate(seq):
-                if nuc == "n" or nuc == "N":
-                    # rand_nuc = str(np.random.choice(["A", "C", "G", "T"]))
-                    # Just gonna put A in there for now - need to update to store the rand seq for alt allele that comes after
-                    rand_nuc = "A"
-                    seq = seq[:idx] + rand_nuc + seq[idx + 1 :]
-
-        # dont have to mutate for ref
-        ref_file.append([record.id, seq.upper()])
-
-        # Now handle alt
-        # Mutate seq
-        nuc = info[3]
-        # Mutate using slop size as index
-        seq = seq[:SLOP_SIZE] + nuc.upper() + seq[SLOP_SIZE + 1 :]
-        alt_file.append([record.id, seq.upper()])
-
-    # Write out
-
-    # REF
-    with gzip.open(OUTPUT_REF, "at") as f:
-        for record in ref_file:
-            f.write(f">{record[0]}\n{record[1]}\n")
-
-    # ALT
-    with gzip.open(OUTPUT_ALT, "at") as f:
-        for record in alt_file:
-            f.write(f">{record[0]}\n{record[1]}\n")
+    # Write ref and alt sequences as fasta using vid as name
+    for chromosome in CHROMOSOMES:
+        with gzip.open(f"{OUTDIR}/ref/{chromosome}.fasta.gz", "w") as ref, open(
+            f"{OUTDIR}/alt/{chromosome}.fasta", "w"
+        ) as alt:
+            for i, row in track[track["Chromosome"] == chromosome].iterrows():
+                ref.write(f">{row['vid']}\n{row['refseq_cleaned']}\n")
+                alt.write(f">{row['vid']}\n{row['altseq_cleaned']}\n")
 
 
 # ------------- #

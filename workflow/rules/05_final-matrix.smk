@@ -11,21 +11,15 @@ min_version("7.12.1")
 # ------------- #
 
 # IO
-INSTALL_DIR = config["MAIN"]["IO_DIRS"]["INSTALL_DIR"]
-PROCESS_DIR = config["MAIN"]["IO_DIRS"]["PROCESS_DIRS"]["STEP_5"]
+INSTALL_DIR = config["IO_DIRS"]["INSTALL_DIR"]
+PROCESS_DIR = config["IO_DIRS"]["PROCESS_DIR"]["STEP_5"]
 
-# Upstream - 02_Process-Motifs
-MOTIF_ACTIVITY = Path(
-    "results", "02_process-motifs", "MA0139.2-track.masked.pwm-activity.bed"
-)
-
-# Upstream - 03_Annotate-Bases
-TRACK_POSITIONS = Path("results", "03_annotate-bases", "positions.bed")
-TRACK_CONSERVATION = Path("results", "03_annotate-bases", "conservation.bed")
-
-# Upstream - 04_Annotate-SNVs
-TRACK_VARIANTS = Path("results", "04_annotate-snvs", "gnomad-snvs.processed.tsv")
-TRACK_ATSNP = Path("results", "04_annotate-snvs", "atsnp", "scored", "format", "snvs.scored.tsv")
+# Inputs from upstream
+VARIANTS = "results/04_annotate-snvs/gnomad-snvs.processed.tsv"
+ATSNP = "results/04_annotate-snvs/gnomad-snvs.atsnp.tsv"
+CONSERVATION = "results/03_annotate-bases/MA0139.2-track.masked.pwm-activity.positions.conservation.bed"
+POSITIONS = "results/03_annotate-bases/positions.bed"
+CBSS = "results/02_process-motifs/cbs-only.noproblematic.ccre.cbsid.bed"
 
 # ------------- #
 # Rules         #
@@ -36,7 +30,7 @@ rule all:
     input:
         Path(
             PROCESS_DIR,
-            "final_matrix.tsv",
+            "final_matrix.tsv.gz",
         ),
 
 
@@ -47,11 +41,11 @@ rule all:
 
 rule final_matrix:
     input:
-        track=TRACK_POSITIONS,
-        activity=MOTIF_ACTIVITY,
-        conservation=TRACK_CONSERVATION,
-        variants=TRACK_VARIANTS,
-        atsnp=TRACK_ATSNP,
+        variants=VARIANTS,
+        atsnp=ATSNP,
+        conservation=CONSERVATION,
+        positions=POSITIONS,
+        cbss=CBSS,
     output:
         Path(
             PROCESS_DIR,

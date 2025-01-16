@@ -11,17 +11,17 @@ min_version("7.12.1")
 # ------------- #
 
 # IO
-INSTALL_DIR = config["MAIN"]["IO_DIRS"]["INSTALL_DIR"]
-PROCESS_DIR = config["MAIN"]["IO_DIRS"]["PROCESS_DIRS"]["STEP_3"]
+INSTALL_DIR = config["IO_DIRS"]["INSTALL_DIR"]
+PROCESS_DIR = config["IO_DIRS"]["PROCESS_DIR"]["STEP_3"]
 
-# Other
-CBS_ACTIVITY = Path("results/02_process-motifs/MA0139.2-track.masked.pwm-activity.bed")
+# CBSs defined from Step 2
+CBSS = Path("results/02_process-motifs/cbs-only.noproblematic.ccre.cbsid.bed")
 
 # Conservation files
-LINSIGHT_SCORES = config["MAIN"]["CONSERVATION"]["LINSIGHT"]
-PHSTCONS_SCORES = config["MAIN"]["CONSERVATION"]["PHASTCONS"]
-GERP_SCORES = config["MAIN"]["CONSERVATION"]["GERP"]
-PHYLOP_SCORES = config["MAIN"]["CONSERVATION"]["PHYLOP"]
+LINSIGHT_SCORES = config["IP_DATA"]["UCSC"]["LINSIGHT"]
+PHSTCONS_SCORES = config["IP_DATA"]["UCSC"]["PHASTCONS"]
+GERP_SCORES = config["IP_DATA"]["UCSC"]["GERP"]
+PHYLOP_SCORES = config["IP_DATA"]["UCSC"]["PHYLOP"]
 
 
 # ------------- #
@@ -30,7 +30,7 @@ PHYLOP_SCORES = config["MAIN"]["CONSERVATION"]["PHYLOP"]
 
 rule all:
     input:
-        Path(PROCESS_DIR, "conservation.bed"),
+        Path(PROCESS_DIR, "MA0139.2-track.masked.pwm-activity.positions.conservation.bed"),
 
 
 # ------------- #
@@ -43,7 +43,7 @@ rule explode_input:
     Explodes control track into positions
     """
     input:
-        CBS_ACTIVITY,
+        CBSS,
     output:
         Path(
             PROCESS_DIR,
@@ -84,7 +84,7 @@ rule annotate_conservation:
     output:
         Path(
             PROCESS_DIR,
-            "conservation.bed",
+            "MA0139.2-track.masked.pwm-activity.positions.conservation.bed",
         ),
     resources:
         mem_mb=32000,

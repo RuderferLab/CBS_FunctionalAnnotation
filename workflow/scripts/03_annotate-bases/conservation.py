@@ -20,7 +20,7 @@ OUTPUT = snakemake.output[0]  # type: ignore
 
 def read_track(filepath: str) -> pd.DataFrame:
     """Returns track as DataFrame"""
-    dtypes = {"chrm": str, "pos0": int, "pos1": int, "pid": str, "mid": str, "idx": int}
+    dtypes = {"pid": str, "mid": str, "mid_idx": int}
     return pd.read_csv(
         filepath,
         sep="\t",
@@ -54,6 +54,11 @@ def main():
 
     # Read in track
     track = read_track(TRACK)
+    
+    # Add hg38 coords from pid
+    track[['chrm', 'pos1']] = track['pid'].str.split("-", expand=True)
+    track['pos1'] = track['pos1'].astype(int)
+    track['pos0'] = track['pos1'] - 1
 
     # Add hg19 coords for linsight bw
     track["pos1_hg19"] = track.apply(lambda x: convert_coord(x, lo), axis=1)
@@ -95,14 +100,13 @@ def main():
             linsight = np.nan
 
         # Store results
-        score_dbase.append([pid, mid, gerp, phast, linsight, phylop])
+        score_dbase.append([pid, gerp, phast, linsight, phylop])
 
     # Update fields
     score_dbase = pd.DataFrame(
         score_dbase,
         columns=[
             "pid",
-            "mid",
             "gerp++",
             "phastcons100",
             "linsight",
@@ -110,10 +114,8 @@ def main():
         ],
     )
     
-    # Tidy digits and explicity report NaN
-    for col in score_dbase.columns[2:]:
-        score_dbase[col] = score_dbase[col].round(5)
-    score_dbase = score_dbase.fillna("NaN")
+    # Tidy digits
+    score_dbase = score_dbase.round(4)
     
     # Write out
     score_dbase.to_csv(OUTPUT, sep="\t", index=False)

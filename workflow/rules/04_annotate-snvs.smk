@@ -11,11 +11,11 @@ min_version("7.12.1")
 # ------------- #
 
 # IO
-INSTALL_DIR = config["MAIN"]["IO_DIRS"]["INSTALL_DIR"]
-PROCESS_DIR = config["MAIN"]["IO_DIRS"]["PROCESS_DIRS"]["STEP_4"]
+INSTALL_DIR = config["IO_DIRS"]["INSTALL_DIR"]
+PROCESS_DIR = config["IO_DIRS"]["PROCESS_DIR"]["STEP_4"]
 
 # Gnomad snvs
-GNOMAD_SNVS = config["MAIN"]["GNOMAD"]["SNVS"]
+GNOMAD_SNVS = config["IP_DATA"]["GNOMAD"]["SNVS"]
 
 # JASPAR
 JASPAR_PFM = Path("resources", "data", "jaspar", "MA0139.2-pfm.txt")
@@ -24,28 +24,57 @@ JASPAR_PFM = Path("resources", "data", "jaspar", "MA0139.2-pfm.txt")
 TRACK_POSITIONS = Path("results", "03_annotate-bases", "positions.bed")
 
 # Other
-GENOME_SIZES = config["MAIN"]["GENOME"]["CHROM_SIZES"]
-GENOME_FASTA =  config["MAIN"]["GENOME"]["HG38_FASTA"]
-GNOMAD_MURATES = Path("resources", "data", "gnomad", "gnomad_v2.supplement-f10.murates-long.tsv")
+HG38_SIZES = config["IP_DATA"]["UCSC"]["HG38_SIZES"]
+HG38_FASTA = config["IP_DATA"]["UCSC"]["HG38_FASTA"]
+GNOMAD_MURATES = Path(
+    "resources", "data", "gnomad", "gnomad_v2.supplement-f10.murates-long.tsv"
+)
 
 
 # ------------- #
 # Rules         #
 # ------------- #
 
-# CHROMOSOMES = [f"chr{i}" for i in range(1, 23)] + ["chrX", "chrY"] NOTE: for full dataset
-CHROMOSOMES = ["chr1", "chr10", "chr11", "chr12"]
+CHROMOSOMES = [f"chr{i}" for i in range(1, 23)] + ["chrX", "chrY"]
 
 rule all:
     input:
-        Path(
-            PROCESS_DIR,
-            "atsnp",
-            "scored",
-            "format",
-            "snvs.scored.tsv",
-        ),
+        Path(PROCESS_DIR, "gnomad-snvs.atsnp.tsv"),
+        Path(PROCESS_DIR, "gnomad-snvs.processed.tsv")
 
+
+# ------------- #
+#     ----      #
+# ------------- #
+
+
+rule format_positions:
+    """
+    Formats positinos for intesect
+    """
+    input:
+        TRACK_POSITIONS,
+    output:
+        temp(
+            Path(
+                PROCESS_DIR,
+                "positions.for_ix.bed",
+            )
+        ),
+    log:
+        stdout="workflow/logs/format_positions.stdout",
+        stderr="workflow/logs/format_positions.stderr",
+    resources:
+        mem_mb=16000,
+        runtime=120,
+    benchmark:
+        "workflow/benchmarks/format_positions.txt"
+    conda:
+        "../envs/install.yaml"
+    shell:
+        """
+        vawk '{{split($1,pid,"-"); print pid[1], pid[2]-1, pid[2], $1}}' {input} | bedtools sort -i stdin > {output}
+        """
 
 
 # ------------- #
@@ -58,7 +87,7 @@ rule extract_snvs:
     Extract SNVs from gnomAD
     """
     input:
-        track=TRACK_POSITIONS,
+        track=rules.format_positions.output,
         snvs=GNOMAD_SNVS,
     output:
         temp(
@@ -68,19 +97,19 @@ rule extract_snvs:
             )
         ),
     log:
-        stdout="workflow/logs/annotate_snvs.stdout",
-        stderr="workflow/logs/annotate_snvs.stderr",
+        stdout="workflow/logs/extract_snvs.stdout",
+        stderr="workflow/logs/extract_snvs.stderr",
     resources:
         mem_mb=16000,
         runtime=120,
     benchmark:
-        "workflow/benchmarks/annotate_snvs.txt"
+        "workflow/benchmarks/extract_snvs.txt"
     conda:
         "../envs/install.yaml"
     shell:
         """
-        bedtools sort -i {input.track} |
-        bedtools intersect -a stdin -b {input.snvs} -loj -sorted > {output}
+        bedtools intersect -a {input.track} -b {input.snvs} -loj -sorted |
+        vawk '{{print $4, $16, $10, $11, $12, $14, $15}}' > {output}
         """
 
 
@@ -91,17 +120,15 @@ rule extract_snvs:
 
 rule process_snvs:
     """
-    Annotates SNVs with murate, tricontext
+    Annotates SNVs with maps annotations
     """
     input:
         track=rules.extract_snvs.output,
-        snvs=GNOMAD_SNVS,
-        genome=GENOME_FASTA,
-        murates=GNOMAD_MURATES,
+        genome=HG38_FASTA,
     output:
         Path(
             PROCESS_DIR,
-            "gnomad-snvs.processed.tsv",
+            "gnomad-snvs.processed.tsv.gz",
         ),
     log:
         stdout="workflow/logs/process_snvs.stdout",
@@ -121,7 +148,6 @@ rule process_snvs:
 #     ----      #
 # ------------- #
 
-
 rule prepare_fastas:
     """
     Prepare reference and alternative fasta files for atSNP
@@ -129,21 +155,21 @@ rule prepare_fastas:
     input:
         track=rules.process_snvs.output,
     output:
-        ref=Path(PROCESS_DIR, "atsnp", "fasta", "ref", "{chrom}.fasta.gz"),
-        alt=Path(PROCESS_DIR, "atsnp", "fasta", "alt", "{chrom}.fasta.gz"),
+        ref=expand(Path(PROCESS_DIR, "atsnp", "fasta", "ref", "{chrom}.fasta"), chrom=CHROMOSOMES),
+        alt=expand(Path(PROCESS_DIR, "atsnp", "fasta", "alt", "{chrom}.fasta"), chrom=CHROMOSOMES),
     params:
         slop_size=14,
-        genome_sizes=str(GENOME_SIZES),
-        genome_fasta=str(GENOME_FASTA),
-        chromosome=lambda wc: wc.chrom,
+        genome_sizes=str(HG38_SIZES),
+        genome_fasta=str(HG38_FASTA),
+        outdir=f"{PROCESS_DIR}/atsnp/fasta",
     log:
-        stdout="workflow/logs/prepare_fastas-{chrom}.stdout",
-        stderr="workflow/logs/prepare_fastas-{chrom}.stderr",
+        stdout="workflow/logs/prepare_fastas.stdout",
+        stderr="workflow/logs/prepare_fastas.stderr",
     resources:
         mem_mb=32000,
         runtime=90,  # runtime in minutes
     benchmark:
-        "workflow/benchmarks/prepare_fastas-{chrom}.txt"
+        "workflow/benchmarks/prepare_fastas.txt"
     conda:
         "../envs/install.yaml"
     script:
@@ -161,8 +187,8 @@ rule score_atsnp:
     """
     input:
         jaspar_pfm=JASPAR_PFM,
-        ref_fa=rules.prepare_fastas.output.ref,
-        alt_fa=rules.prepare_fastas.output.alt,
+        ref_fa=Path(PROCESS_DIR, "atsnp", "fasta", "ref", "{chrom}.fasta.gz"),
+        alt_fa=Path(PROCESS_DIR, "atsnp", "fasta", "alt", "{chrom}.fasta.gz"),
     output:
         Path(
             PROCESS_DIR,
@@ -190,21 +216,18 @@ rule score_atsnp:
 #     ----      #
 # ------------- #
 
-
 rule format_atsnp:
     message:
         """
         Combine and format atSNP scores
         """
     input:
+        track=rules.process_snvs.output,
         atsnp=expand(rules.score_atsnp.output, chrom=CHROMOSOMES),
     output:
         Path(
             PROCESS_DIR,
-            "atsnp",
-            "scored",
-            "format",
-            "snvs.scored.tsv",
+            "gnomad-snvs.atsnp.tsv.gz",
         ),
     resources:
         mem_mb=32000,
