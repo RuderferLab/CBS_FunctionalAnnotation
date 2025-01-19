@@ -5,30 +5,41 @@
 IO_DIRS:
   INSTALL_DIR: resources
   PROCESS_DIR: 
-    STEP_1: results/01_annotate-rdhs
-    STEP_2: results/02_process-motifs
-    STEP_3: results/03_annotate-bases
-    STEP_4: results/04_annotate-snvs
-    STEP_5: results/05_final-matrix
+    STEP_1: results/01_rDHS-Activity
+    STEP_2: results/02_Define-CBS
+    STEP_3: results/03_Conservation
+    STEP_4: results/04_Annotate-Variants
+    STEP_5: results/05_Assemble-Matrix
 IP_DATA:
+  PREPROCESSED:
+    RDHS_SIGNAL_SUMMARY: "resources/preprocessed/CTCF-zscore.rDHS-V3.hg38.tsv.processed.gz"
+    CTCF_MOTIFS: "resources/preprocessed/CTCF-motifs.MA01392.hg38.tsv.processed.gz"
+    GENCODE_EXONS: resources/preprocessed/Exons-PC.Gencode.hg38.tsv.processed.gz
+    CONSERVATION:
+      # GERP: "/data/ruderferlab/projects/biovu/cnv/cre/resources/conservation/gerp.hg19.bed.gz"
+      # LINSIGHT: "/data/ruderferlab/projects/biovu/cnv/cre/resources/conservation/linsight.hg19.bed.gz"
+      # PHYLOP: "/data/ruderferlab/projects/biovu/cnv/cre/resources/conservation/phylop100way.hg38.bed.gz"
+      # PHASTCONS: "/data/ruderferlab/projects/biovu/cnv/cre/resources/conservation/phastcons100way.hg38.bed.gz"
+      GERP: # Path to Gerp++ bedfile
+      LINSIGHT: # Path to Linsight bedfile
+      PHYLOP: # Path to Phylop bedfile
+      PHASTCONS: # Path to Phastcons100 bedfile
+      # SNVS: "/data/ruderferlab/resources/gnomad/results/gnomad.v3.snvs.all.hg38.vid.bed.sorted.gz"
+      SNVS: # Path to gnomad snvs bedfile
+      MAPS: "resources/preprocessed/MAPS-Calibrated.pickle"
+      MURATES: "resources/preprocessed/Murates.gnomAD.tsv"
   ENCODE:
     CCRES: resources/data/encode/GRCh38-cCREs.bed.gz
     BLACKLIST: resources/data/genome/hg38.blacklist.bed.gz
-    CTCF_ZSCORE_MATRIX: /data/ruderferlab/projects/biovu/cnv/cre/projects/CBS_FunctionalAnnotationParent/resources/data/encode/GRCh38.CTCF-zscore.rDHS-V3.txt.gz
   JASPAR:
     CTCF_TRACK: resources/jaspar/MA0139.2.tsv.gz
   UCSC:
-    GERP: /data/ruderferlab/projects/biovu/cnv/cre/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/All_hg19_RS.bw
-    PHASTCONS: /data/ruderferlab/projects/biovu/cnv/cre/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/hg38.phastCons100way.bw
-    PHYLOP: /data/ruderferlab/projects/biovu/cnv/cre/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/hg38.phyloP100way.bw
-    LINSIGHT: /data/ruderferlab/projects/biovu/cnv/cre/projects/CBS_FunctionalAnnotationParent/resources/data/conservation/LINSIGHT.bw
-    HG38_FASTA: /data/ruderferlab/projects/biovu/cnv/cre/projects/CBS_FunctionalAnnotationParent/resources/data/genome/hg38/hg38.fa
+    # HG38_FASTA: /data/ruderferlab/projects/biovu/cnv/cre/projects/CBS_FunctionalAnnotationParent/resources/data/genome/hg38/hg38.fa
+    HG38_FASTA: # Path to hg38 fasta file
     HG38_GAPS: resources/data/genome/hg38.gaps.bed.gz
     HG38_SIZES: resources/data/genome/hg38.fa.sizes
-  GENCODE:
-    EXONS: resources/data/gencode/gencode.hg38.exons.pc.bed.gz
-  GNOMAD:
-    SNVS: /data/ruderferlab/resources/gnomad/results/gnomad.v3.snvs.all.hg38.vid.bed.sorted.gz
+    HG38TOHG19_CHAIN: resources/data/genome/hg38ToHg19.over.chain.gz
+
   
 ###
 # File URLs
