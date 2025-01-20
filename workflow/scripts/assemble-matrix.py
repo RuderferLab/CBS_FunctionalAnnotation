@@ -1,3 +1,5 @@
+"""assemble-matrix.py"""
+
 import pandas as pd
 
 # Snakemake

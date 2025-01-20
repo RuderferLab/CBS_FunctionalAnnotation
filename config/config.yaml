@@ -14,31 +14,25 @@ IP_DATA:
   PREPROCESSED:
     RDHS_SIGNAL_SUMMARY: "resources/preprocessed/CTCF-zscore.rDHS-V3.hg38.tsv.processed.gz"
     CTCF_MOTIFS: "resources/preprocessed/CTCF-motifs.MA01392.hg38.tsv.processed.gz"
-    GENCODE_EXONS: resources/preprocessed/Exons-PC.Gencode.hg38.tsv.processed.gz
+    GENCODE_EXONS: "resources/preprocessed/Exons-PC.Gencode.hg38.tsv.processed.gz"
     CONSERVATION:
-      # GERP: "/data/ruderferlab/projects/biovu/cnv/cre/resources/conservation/gerp.hg19.bed.gz"
-      # LINSIGHT: "/data/ruderferlab/projects/biovu/cnv/cre/resources/conservation/linsight.hg19.bed.gz"
-      # PHYLOP: "/data/ruderferlab/projects/biovu/cnv/cre/resources/conservation/phylop100way.hg38.bed.gz"
-      # PHASTCONS: "/data/ruderferlab/projects/biovu/cnv/cre/resources/conservation/phastcons100way.hg38.bed.gz"
       GERP: # Path to Gerp++ bedfile
       LINSIGHT: # Path to Linsight bedfile
       PHYLOP: # Path to Phylop bedfile
       PHASTCONS: # Path to Phastcons100 bedfile
-      # SNVS: "/data/ruderferlab/resources/gnomad/results/gnomad.v3.snvs.all.hg38.vid.bed.sorted.gz"
       SNVS: # Path to gnomad snvs bedfile
       MAPS: "resources/preprocessed/MAPS-Calibrated.pickle"
       MURATES: "resources/preprocessed/Murates.gnomAD.tsv"
   ENCODE:
-    CCRES: resources/data/encode/GRCh38-cCREs.bed.gz
-    BLACKLIST: resources/data/genome/hg38.blacklist.bed.gz
+    CCRES: "resources/data/encode/GRCh38-cCREs.bed.gz"
+    BLACKLIST: "resources/data/genome/hg38.blacklist.bed.gz"
   JASPAR:
-    CTCF_TRACK: resources/jaspar/MA0139.2.tsv.gz
+    CTCF_TRACK: "resources/jaspar/MA0139.2.tsv.gz"
   UCSC:
-    # HG38_FASTA: /data/ruderferlab/projects/biovu/cnv/cre/projects/CBS_FunctionalAnnotationParent/resources/data/genome/hg38/hg38.fa
     HG38_FASTA: # Path to hg38 fasta file
-    HG38_GAPS: resources/data/genome/hg38.gaps.bed.gz
-    HG38_SIZES: resources/data/genome/hg38.fa.sizes
-    HG38TOHG19_CHAIN: resources/data/genome/hg38ToHg19.over.chain.gz
+    HG38_GAPS: "resources/data/genome/hg38.gaps.bed.gz"
+    HG38_SIZES: "resources/data/genome/hg38.fa.sizes"
+    HG38TOHG19_CHAIN: "resources/data/genome/hg38ToHg19.over.chain.gz"
 
   
 ###

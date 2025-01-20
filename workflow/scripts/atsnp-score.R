@@ -35,9 +35,12 @@ atsnp.result <- ComputePValues(motif.lib = pwm, snp.info = snp_info,
 
 print("Done calculating pvalues..")
 
-#
-results <- atsnp.result[,c("snpid", "motif", "pval_ref", "pval_snp", "pval_diff", "pval_cond_ref", "pval_cond_snp",
-"pval_rank", "snpbase", "log_lik_ref", "log_lik_snp", "log_lik_ratio")]
+# Subset results
+results <- atsnp.result[, c(
+  "snpid", "motif", "pval_ref", "pval_snp", "pval_diff", 
+  "pval_cond_ref", "pval_cond_snp", "pval_rank", 
+  "snpbase", "log_lik_ref", "log_lik_snp", "log_lik_ratio"
+)]
 
 
 print('writing out...')

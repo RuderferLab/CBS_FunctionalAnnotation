@@ -1,6 +1,6 @@
 Created: 2024-09-04
 
-Last edited: 2025-01-16
+Last edited: 2025-01-20
 
 ### Authors:
 
@@ -48,4 +48,14 @@ http://compgen.cshl.edu/LINSIGHT/LINSIGHT.bw
 This respository is structured as a Snakemake workflow. To demonstrate how the study dataset was constructed, we've included all workflow input and outputs. All code used to generate these files are contained in the `workflow` directory and all intermediate outputs for this sample dataset are in the `results` directory.
 
 
-For details on the generation of all figures included in the manuscript, see `results/manuscript/figures.ipynb`. For code to generate maps scores see `results/manuscript/maps`.  We provide two summary files generated from the study; for all CBS annotated by their intersecting rDHS, CTCF motif and activity score see `results/manuscript/files/activity-scores.all-CBS.tsv.gz`, for all CBS variants annotated by their activity and dPWM statistics see `results/manuscript/files/variants-scores.all-CBS.tsv.gz`. 
+For details on the generation of all figures included in the manuscript, see `workflow/notebooks/plots.ipynb`. For code to generate maps scores see `workflow/notebooks/maps.ipynb`.  We provide two summary files generated from the study; for all CBS annotated by their intersecting rDHS, CTCF motif and activity score see `results/Manuscript/files/activity-scores.all-CBS.tsv.gz`, for all CBS variants annotated by their activity and dPWM statistics see `results/Manuscript/files/variants-scores.all-CBS.tsv.gz`. 
+
+### Executing the pipeline
+
+To execute the pipeline without HPC resources, execute the command:
+
+```snakemake --rerun-triggers mtime --use-conda --conda-prefix ~/snakemake_condas/ --use-conda --conda-prefix ~/snakemake_condas/ -c12 --rerun-incomplete```
+
+
+To execute the pipeline with HPC resources, execute the command:
+```snakemake --rerun-triggers mtime --use-conda --conda-prefix ~/snakemake_condas/ --jobs 25 --cluster-config "config/cluster.yaml" --cluster "sbatch --mem={resources.mem_mb} --time={resources.runtime} --cpus-per-task {threads} --output={cluster.output} --error={cluster.error} --account={cluster.account}"```

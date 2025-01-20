@@ -1,3 +1,5 @@
+"""atsnp-fasta.py"""
+
 import gzip
 import pandas as pd
 import pyranges as pr
