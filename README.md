@@ -14,33 +14,22 @@ Tubbs, C., Benton, M. L., McArthur, E., Capra, J. A. & Ruderfer, D. M. Identifyi
 <h2>Publicly available data</h2></summary>
 All datasets used in this study are publicly available. 
 
-Genetic data from gnomAD v3.1.2 was downloaded for all chromosomes as a Hail matrix table:
-
-https://gnomad.broadinstitute.org/data
-
-CTCF’s binding activity Z-scores assessed in the cCRE framework were downloaded from the ENCODE-SCREEN web portal:
-
-https://downloads.wenglab.org/cCREs/matrices/all/GRCh38.CTCF-zscore.rDHS-V3.txt.gz
+Genetic data from gnomAD v3.1.2 was downloaded for all chromosomes as a Hail matrix table. |  [Link](https://gnomad.broadinstitute.org/data)
 
 
-CTCF’s canonical PWM (MA0139.2) was downloaded from the JASPAR 2024 web portal:
+CTCF’s binding activity Z-scores assessed in the cCRE framework were downloaded from the ENCODE-SCREEN web portal. | [Link](https://downloads.wenglab.org/cCREs/matrices/all/GRCh38.CTCF-zscore.rDHS-V3.txt.gz)
 
-https://jaspar.elixir.no/api/v1/matrix/MA0139.2.jaspar
-
+CTCF’s canonical PWM (MA0139.2) was downloaded from the JASPAR 2024 web portal. | [Link](https://jaspar.elixir.no/api/v1/matrix/MA0139.2.jaspar)
 
 Conservation scores were downloaded from the UCSC genome browser. GERP++ scores in build hg19, Phastcons100 and PhyloP100 scores in build hg38 are found at:
 
-GERP++ in build hg19
-https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/All_hg19_RS.bw
+- GERP++ in build hg19 ([Link](https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/All_hg19_RS.bw))
 
-Phastcons100 in build hg38:
-http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phastCons100way
+- Phastcons100 in build hg38. | [Link](http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phastCons100way)
 
-Phlop100 in build hg38:
-http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phylop100way
+- Phlop100 in build hg38. | [Link](http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phylop100way)
 
-LINSIGHT scores  in build hg19 from Huang et al. 2017 were downloaded here:
-http://compgen.cshl.edu/LINSIGHT/LINSIGHT.bw
+- LINSIGHT scores  in build hg19 from Huang et al. 2017 were downloaded here. | [Link](http://compgen.cshl.edu/LINSIGHT/LINSIGHT.bw)
 
 <h2>Repository code</h2></summary>
 
