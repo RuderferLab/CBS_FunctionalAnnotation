@@ -4,7 +4,7 @@ Created: 2024-09-04
 
 <h2>Authors</h2></summary>
 
-Colby Tubbs, Mary Lauren Benton, Evonne McArthur, John A. Capra and Douglas M. Ruderfer @ the Ruderfer Lab (https://ruderferlab.org)
+Colby Tubbs, Mary Lauren Benton, Evonne McArthur, John A. Capra and Douglas M. Ruderfer @ the [Ruderfer Lab](https://ruderferlab.org)
 
 <h2>Paper</h2></summary>
 
